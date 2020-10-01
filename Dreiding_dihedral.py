@@ -1,16 +1,42 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file generates moltemplate coefficient data for the dihedral angle section
+# of the force field. Labels are taken from the Dreiding_label_dictionary. The
+# dihedral calculation is the most complicated of all the force field components
+# as it relies on 10 different cases to catagorise all possible dihedral
+# coefficients. As such this file may take around 30 seconds to compute.
+#
+# All cases are built by subsetting the main label dictionary.
+# The wildcard functions compress labels with unnecessary flags into labels with
+# a wildcard (*). This is done later in some case dictionaries as flags are
+# required to subset the main dictionary. Constants can be changed for each case
+# at the start of each case. All DREIDING dihedral cases only use the dihedral
+# bonding atoms, apart from Case J. No dihedral type names should be repeated;
+# there is a check to generate an error if this is happens. Case I is at the
+# bottom so that it has priority when computed by Moltemplate
+##############################################################################
+
 # Import packages
 import os
-import pandas as pd
-import numpy as np
 from Dreiding_label_dictionary import labelDict
 
 os.chdir("/home/matt/Documents/Dreiding_forcefield")
 subDict = labelDict
-subDict
 
 # List of keys from dictionary
 keys = list(subDict.keys())
-keys
 
 # Replace many labels with a single wildcard label
 # Wildcard function drops values and replaces them with replacement
@@ -224,8 +250,6 @@ for j in range(len(caseEDictionaryJ)):
 # Second half for catching b2-other bonds
 caseEDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "b2" in key}
 caseEDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key and "b2" not in key}
-caseEDictionaryJ
-caseEDictionaryK
 caseEKeysJ = list(caseEDictionaryJ.keys())
 caseEKeysK = list(caseEDictionaryK.keys())
 
@@ -271,7 +295,7 @@ CASE_F_PHASE_SHIFT = 180 * CASE_F_MULTIPLICITY + 180
 # This handles R_b1-R_b1 bonds
 caseFDictionary = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_R_b1" in key or "_R*_b1" in key}
 caseFKeys = list(caseFDictionary.keys())
-caseFDictionary
+
 for j in range(len(caseFDictionary)):
     for k in range(len(caseFDictionary)):
 

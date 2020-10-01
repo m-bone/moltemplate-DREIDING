@@ -1,3 +1,23 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file generates moltemplate coefficient data for the nonbonding Lennard -
+# Jones potential. As DREIDING only uses element to determine nonbonding
+# coefficients, this script uses an atomDictionary rather than the
+# Dreiding_label_dictionary. All R values are the original DREIDING value
+# divided by 2^1/6 as LAMMPS requires R at the zero crossing point.
+##############################################################################
 # Import packages
 import os
 import pandas as pd
@@ -5,6 +25,7 @@ import numpy as np
 
 os.chdir("/home/matt/Documents/Dreiding_forcefield")
 
+# [0] is R, [1] is D
 atomDictionary = {
     "H": [2.846421, 0.0152],
     "H_HB": [2.846421, 0.0001],

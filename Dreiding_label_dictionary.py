@@ -1,6 +1,28 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file stores all the possible labels and their associated constants to
+# calculate the mass, bond and dihedral files. Included is nonbonding Lennard-
+# Jones potential constants. These are not used anymore but are kept here as
+# legacy. The second wave additions are the inclusion of all other atoms apart
+# from H, C, O and N. New labels can be added by copying the format and
+# recompiling the force field.
+##############################################################################
+
 # Dictionary of all possible labels
 # Index [0] - mass; [1] - bond data (R0); [2] - nonbond LJ where [2][0] is
-# R0 and [2][1] is D0; [3] - dihedral data
+# R0 and [2][1] is D0; [3] - dihedral data (number of possible bonds)
 
 labelDict= {
     "H": [1.008, 0.330, [2.846421, 0.0152], 0],
@@ -36,7 +58,7 @@ labelDict= {
     "N_2_b1_d1": [14.007, 0.615, [3.262560, 0.0774], 1],
     "N_2_b1_d1_ha": [14.007, 0.615, [3.262560, 0.0774], 1], # hd equivalent doesn't exist, can't need b1 specifying and be hd
     "N_2_b2_d1": [14.007, 0.615, [3.262560, 0.0774], 1],
-    "N_2_b2_d1_ha": [14.007, 0.615, [3.262560, 0.0774], 1], # hd equivalent doesn't exist, can't need b1 specifying and be hd
+    "N_2_b2_d1_ha": [14.007, 0.615, [3.262560, 0.0774], 1], # hd equivalent doesn't exist, can't need b2 specifying and be hd
     "N_2_d2": [14.007, 0.615, [3.262560, 0.0774], 2],
     "N_2_d2_hd": [14.007, 0.615, [3.262560, 0.0774], 2],
     "N_2_d2_ha": [14.007, 0.615, [3.262560, 0.0774], 2],

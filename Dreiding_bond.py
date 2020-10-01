@@ -1,3 +1,27 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file generates moltemplate coefficient data for the bonds section of
+# the force field. Labels are taken from the Dreiding_label_dictionary.
+#
+# The wildcard functions compress labels with unnecessary flags into labels with
+# a wildcard (*). K is set at 700/2 as K values must be divided prior to the
+# LAMMPS style calculation. Bond orders are given to the bondWrite function
+# which writes coefficients for the labels at a given stage of the if statement
+# check. b1/b2 flags are handled first for higher priority.
+##############################################################################
+
 # Import packages
 import os
 import pandas as pd
@@ -78,12 +102,6 @@ R0 = R0.astype('float64')
 R0 = np.asmatrix(R0)
 R0 = np.tril(R0)
 R0 = np.around(R0, decimals = 3)
-
-# For debug checking
-R0Pandas = pd.DataFrame(R0)
-R0Pandas.columns = keys
-R0Pandas.index = keys
-R0Pandas
 
 # Set K in (kcal/mol)/A**2
 K = 700/2

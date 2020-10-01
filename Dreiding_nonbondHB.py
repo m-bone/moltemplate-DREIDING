@@ -1,32 +1,34 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file generates moltemplate coefficient data for the hydrogen bonding
+# component of the force field. LAMMPS uses hbond/dreiding style and requires
+# specialised forcefield coefficients to faciliate it. The use of the hd/ha
+# flags and wildcards (*) means this file is very short.
+##############################################################################
+
 # Import packages
 import os
-from Dreiding_label_dictionary import labelDict
 
 os.chdir("/home/matt/Documents/Dreiding_forcefield")
 
-# keys = list(labelDict.keys())
-#
-#
-# acceptorKeys = [ha for ha in keys if "ha" in ha]
-# donorKeys = [hd for hd in keys if "hd" in hd]
-
 R = "2.75" # Angstroms
 D = "4.0" # kcal/mol
-
 
 file = open("hb_nonbond.txt", "w")
 
 file.write("pair_coeff  @atom:*_hd  @atom:*_hd hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
 file.write("pair_coeff  @atom:*_hd  @atom:*_ha hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
-
-# # Donor and acceptor interactions - label = hd
-# for i in range(len(donorKeys)):
-#     for j in range(len(donorKeys)):
-#         file.write("pair_coeff  @atom:" + donorKeys[i] + "  @atom:" + donorKeys[j] + " hbond/dreiding/lj " + "@atom:H_HB i " + D + " " + R + " 4" "\n")
-#
-# # Donor interactions with acceptors - label = ha
-# for i in range(len(donorKeys)):
-#     for j in range(len(acceptorKeys)):
-#         file.write("pair_coeff  @atom:" + donorKeys[i] + "  @atom:" + acceptorKeys[j] + " hbond/dreiding/lj " + "@atom:H_HB i " + D + " " + R + " 4" "\n")
 
 file.close()

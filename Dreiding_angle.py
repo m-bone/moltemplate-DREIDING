@@ -1,3 +1,26 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 01/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file generates moltemplate coefficient data for the bond angle section of
+# the force field. DREIDING has a very simple implementation of bond angles so
+# this script is short and doesn't use the Dreiding_label_dictionary. The
+# atomDictionary is the list of possible labels and associated angles. In
+# addition, X_2, X_1 and X_R labels are added with wildcards as they all share
+# the same angles (120.0, 180.0, and 120.0 respectively). The angle constant is
+# fixed at 50.0 for all angle types.
+##############################################################################
+
 # Import packages
 import os
 
