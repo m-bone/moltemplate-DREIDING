@@ -33,10 +33,8 @@ import os
 from Dreiding_label_dictionary import labelDict
 
 os.chdir("/home/matt/Documents/Dreiding_forcefield")
-subDict = labelDict
 
-# List of keys from dictionary
-keys = list(subDict.keys())
+subDict = labelDict
 
 # Replace many labels with a single wildcard label
 # Wildcard function drops values and replaces them with replacement
@@ -47,6 +45,22 @@ def wildcard(list, replacement):
 def wildcardCases(list, replacement, dict):
     for value in list:
         dict[replacement] = dict.pop(value)
+
+def writeOutput(ENERGY, MULTIPLICITY, PHASE_SHIFT, *args):
+    # Create type name for dihedral, remove wildcard * if present
+    dihedralName = '-'.join(args)
+    dihedralName = dihedralName.replace("*", "w")
+
+    # Change string if case has 3 atoms
+    if len(args) == 2:
+        firstTerm = " @atom:*"
+    else:
+        firstTerm = " @atom:" + args[2]
+    # Writes to files, calculate barrier energy and add key combo to list
+    file_type.write("@dihedral:" + dihedralName + firstTerm + " @atom:" + args[0] + " @atom:" + args[1] + " @atom:*\n")
+    barrierEnergy = str(round(ENERGY / (valueJ * valueK), 4))
+    file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(MULTIPLICITY) + " " + str(PHASE_SHIFT) + " 0.000\n")
+    typeNames.append(dihedralName)
 
 # Reducing labels with replacement wildcard - wildcard([], )
 # Hydrogen
@@ -85,7 +99,7 @@ wildcard(["O_1", "O_1_ha"], "O_1*")
 wildcard(["F", "F_hd", "F_ha"], "F*")
 
 # Number of possible atomic bonds, aside from the J-K bond in question
-possibleAtoms = {key: subDict[key][3] for key in subDict.keys()}
+possibleAtoms = {key: value[3] for key, value in subDict.items()}
 
 # List of X_3 in column 16 as treated differently (oxygen, sulphur, etc.)
 column16 = ["O_3*", "S_3", "Se_3", "Te_3"]
@@ -105,25 +119,16 @@ CASE_A_MULTIPLICITY = 3
 CASE_A_PHASE_SHIFT = 180 * CASE_A_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_3" in the key
-caseADictionary = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_3" in key}
-caseAKeys = list(caseADictionary.keys())
+caseADictionary = {key: value for key, value in possibleAtoms.items() if "_3" in key}
 
-for j in range(len(caseADictionary)):
-    for k in range(len(caseADictionary)):
+for keyJ, valueJ in caseADictionary.items():
+    for keyK, valueK in caseADictionary.items():
 
         # Due to Case H priority - skips column16-column16 bonding pairs
-        if caseAKeys[j][0:4] in column16 and caseAKeys[k][0:4] in column16:
+        if keyJ[0:4] in column16 and keyK[0:4] in column16:
             continue
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseAKeys[j] + "-" + caseAKeys[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseAKeys[j] + " @atom:" + caseAKeys[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_A_ENERGY / (caseADictionary[caseAKeys[j]] * caseADictionary[caseAKeys[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_A_MULTIPLICITY) + " " + str(CASE_A_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_A_ENERGY, CASE_A_MULTIPLICITY, CASE_A_PHASE_SHIFT, keyJ, keyK)
 
 # Case B - J = X_2, X_R, K = X_3 single bond with one sp2 and sp3 atoms e.g. toluene
 CASE_B_ENERGY = 1.0/2
@@ -131,7 +136,7 @@ CASE_B_MULTIPLICITY = 6
 CASE_B_PHASE_SHIFT = 0 * CASE_B_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_3", "_2" or "_R" in the key
-caseBDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key or "_R" in key}
+caseBDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_2" in key or "_R" in key}
 wildcardCases(["C_2", "C_2_b1", "C_2_b2"], "C_2*", caseBDictionaryJ)
 wildcardCases(["C_R*", "C_R*_b1"], "C_R*", caseBDictionaryJ)
 wildcardCases(["B_2_d1", "B_2_b1_d1", "B_2_b2_d1"], "B_2*_d1", caseBDictionaryJ)
@@ -141,26 +146,16 @@ wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseBDictiona
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseBDictionaryJ)
 wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseBDictionaryJ)
 
-caseBDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_3" in key}
-caseBKeysK = list(caseBDictionaryK.keys())
-caseBKeysJ = list(caseBDictionaryJ.keys())
+caseBDictionaryK = {key: value for key, value in possibleAtoms.items() if "_3" in key}
 
-for j in range(len(caseBDictionaryJ)):
-    for k in range(len(caseBDictionaryK)):
+for keyJ, valueJ in caseBDictionaryJ.items():
+    for keyK, valueK in caseBDictionaryK.items():
 
         # Due to Case I priority - Case J given priority by MT rather than here
-        if keys[k] in column16:
+        if keyK in column16:
             continue
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseBKeysJ[j] + "-" + caseBKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseBKeysJ[j] + " @atom:" + caseBKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_B_ENERGY / (caseBDictionaryJ[caseBKeysJ[j]] * caseBDictionaryK[caseBKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_B_MULTIPLICITY) + " " + str(CASE_B_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_B_ENERGY, CASE_B_MULTIPLICITY, CASE_B_PHASE_SHIFT, keyJ, keyK)
 
 # Case C - J,K = X_2 double bond with two sp2 atoms
 CASE_C_ENERGY = 45.0/2
@@ -169,30 +164,19 @@ CASE_C_PHASE_SHIFT = 180 * CASE_C_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_2" in the key
 # Two dictionaries as need one with _b1 and one without
-caseCDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key}
-caseCDictionaryK = {key: caseCDictionaryJ[key] for key in caseCDictionaryJ.keys() if "_b1" not in key}
-caseCKeysJ = list(caseCDictionaryJ.keys())
-caseCKeysK = list(caseCDictionaryK.keys())
+caseCDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_2" in key}
+caseCDictionaryK = {key: value for key, value in caseCDictionaryJ.items() if "_b1" not in key}
 
-
-for j in range(len(caseCDictionaryJ)):
-    for k in range(len(caseCDictionaryK)):
+for keyJ, valueJ in caseCDictionaryJ.items():
+    for keyK, valueK in caseCDictionaryK.items():
 
         # Removes "notb2"-b2 bonds which are single bonds
-        if "_b2" in caseCKeysJ[j] and "_b2" not in caseCKeysK[k]:
+        if "_b2" in keyJ and "_b2" not in keyK:
             continue
-        if "_b2" not in caseCKeysJ[j] and "_b2" in caseCKeysK[k]:
+        if "_b2" not in keyJ and "_b2" in keyK:
             continue
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseCKeysJ[j] + "-" + caseCKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseCKeysJ[j] + " @atom:" + caseCKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_C_ENERGY / (caseCDictionaryJ[caseCKeysJ[j]] * caseCDictionaryK[caseCKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_C_MULTIPLICITY) + " " + str(CASE_C_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_C_ENERGY, CASE_C_MULTIPLICITY, CASE_C_PHASE_SHIFT, keyJ, keyK)
 
 # Case D - J,K = X_R resonance bond involving two resonance atoms
 CASE_D_ENERGY = 25.0/2
@@ -201,23 +185,13 @@ CASE_D_PHASE_SHIFT = 180 * CASE_D_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_R" in the key
 # Two dictionaries as need one with _b1 and one without
-caseDDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_R" in key}
-caseDDictionaryK = {key: caseDDictionaryJ[key] for key in caseDDictionaryJ.keys() if "_b1" not in key}
-caseDKeysJ = list(caseDDictionaryJ.keys())
-caseDKeysK = list(caseDDictionaryK.keys())
+caseDDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_R" in key}
+caseDDictionaryK = {key: value for key, value in caseDDictionaryJ.items() if "_b1" not in key}
 
-for j in range(len(caseDDictionaryJ)):
-    for k in range(len(caseDDictionaryK)):
+for keyJ, valueJ in caseDDictionaryJ.items():
+    for keyK, valueK in caseDDictionaryK.items():
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseDKeysJ[j] + "-" + caseDKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseDKeysJ[j] + " @atom:" + caseDKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_D_ENERGY / (caseDDictionaryJ[caseDKeysJ[j]] * caseDDictionaryK[caseDKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_D_MULTIPLICITY) + " " + str(CASE_D_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_D_ENERGY, CASE_D_MULTIPLICITY, CASE_D_PHASE_SHIFT, keyJ, keyK)
 
 # Case E - J,K = X_2, X_R single bond involving two sp2 or resonant atoms ONLY B1
 CASE_E_ENERGY = 5.0/2
@@ -226,64 +200,36 @@ CASE_E_PHASE_SHIFT = 180 * CASE_E_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_R_b1" or "_2_b1" in the key
 # Two dictionaries so that R_b1-R_b1 bonds are left for Case F
-# Split into two halves due to complexity added with the b2 flag
-caseEDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_R_b1" in key or "_R*_b1" in key or "_2_b1" in key}
-caseEDictionaryK = {key: caseEDictionaryJ[key] for key in caseEDictionaryJ.keys() if "_R_b1" not in key}
+# Split into thirds due to complexity added with the b2 flag
+
+# This third handles b1-b1 bond pairs, apart from R-b1-R-b1 which is Case F
+caseEDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_R_b1" in key or "_R*_b1" in key or "_2_b1" in key}
+caseEDictionaryK = {key: value for key, value in caseEDictionaryJ.items() if "_R_b1" not in key}
 caseEDictionaryK.pop("C_R*_b1")
-caseEKeysJ = list(caseEDictionaryJ.keys())
-caseEKeysK = list(caseEDictionaryK.keys())
 
+for keyJ, valueJ in caseEDictionaryJ.items():
+    for keyK, valueK in caseEDictionaryK.items():
 
-for j in range(len(caseEDictionaryJ)):
-    for k in range(len(caseEDictionaryK)):
+        writeOutput(CASE_E_ENERGY, CASE_E_MULTIPLICITY, CASE_E_PHASE_SHIFT, keyJ, keyK)
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseEKeysJ[j] + "-" + caseEKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
+# Catches b2-notb2 bonds - all bonds for b2 atoms are single bonds unless
+# both atoms have the b2 flag
+caseEDictionaryJ = {key: value for key, value in possibleAtoms.items() if "b2" in key}
+caseEDictionaryK = {key: value for key, value in possibleAtoms.items() if "_2" in key and "b2" not in key}
 
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseEKeysJ[j] + " @atom:" + caseEKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_E_ENERGY / (caseEDictionaryJ[caseEKeysJ[j]] * caseEDictionaryK[caseEKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_E_MULTIPLICITY) + " " + str(CASE_E_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+for keyJ, valueJ in caseEDictionaryJ.items():
+    for keyK, valueK in caseEDictionaryK.items():
 
-# Second half for catching b2-other bonds
-caseEDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "b2" in key}
-caseEDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key and "b2" not in key}
-caseEKeysJ = list(caseEDictionaryJ.keys())
-caseEKeysK = list(caseEDictionaryK.keys())
+        writeOutput(CASE_E_ENERGY, CASE_E_MULTIPLICITY, CASE_E_PHASE_SHIFT, keyJ, keyK)
 
-for j in range(len(caseEDictionaryJ)):
-    for k in range(len(caseEDictionaryK)):
+# Catches dihedrals between X_R and X_2
+caseEDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_R" in key and "_b1" not in key}
+caseEDictionaryK = {key: value for key, value in possibleAtoms.items() if "_2" in key}
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseEKeysJ[j] + "-" + caseEKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
+for keyJ, valueJ in caseEDictionaryJ.items():
+    for keyK, valueK in caseEDictionaryK.items():
 
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseEKeysJ[j] + " @atom:" + caseEKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_E_ENERGY / (caseEDictionaryJ[caseEKeysJ[j]] * caseEDictionaryK[caseEKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_E_MULTIPLICITY) + " " + str(CASE_E_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
-
-# Second half for catching b2-other bonds
-caseEDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_R" in key and "_b1" not in key}
-caseEDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key}
-caseEKeysJ = list(caseEDictionaryJ.keys())
-caseEKeysK = list(caseEDictionaryK.keys())
-
-for j in range(len(caseEDictionaryJ)):
-    for k in range(len(caseEDictionaryK)):
-
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseEKeysJ[j] + "-" + caseEKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseEKeysJ[j] + " @atom:" + caseEKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_E_ENERGY / (caseEDictionaryJ[caseEKeysJ[j]] * caseEDictionaryK[caseEKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_E_MULTIPLICITY) + " " + str(CASE_E_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_E_ENERGY, CASE_E_MULTIPLICITY, CASE_E_PHASE_SHIFT, keyJ, keyK)
 
 # Case F - J,K = X_R
 # Lower so greater priority over case E, which it supersedes in some cases
@@ -293,21 +239,12 @@ CASE_F_PHASE_SHIFT = 180 * CASE_F_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_R_b1" in the key
 # This handles R_b1-R_b1 bonds
-caseFDictionary = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_R_b1" in key or "_R*_b1" in key}
-caseFKeys = list(caseFDictionary.keys())
+caseFDictionary = {key: value for key, value in possibleAtoms.items() if "_R_b1" in key or "_R*_b1" in key}
 
-for j in range(len(caseFDictionary)):
-    for k in range(len(caseFDictionary)):
+for keyJ, valueJ in caseFDictionary.items():
+    for keyK, valueK in caseFDictionary.items():
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseFKeys[j] + "-" + caseFKeys[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseFKeys[j] + " @atom:" + caseFKeys[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_F_ENERGY / (caseFDictionary[caseFKeys[j]] * caseFDictionary[caseFKeys[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_F_MULTIPLICITY) + " " + str(CASE_F_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_F_ENERGY, CASE_F_MULTIPLICITY, CASE_F_PHASE_SHIFT, keyJ, keyK)
 
 # Case G - J,K = X_1, monovalent, metal
 # This case is included to make up the numbers in terms of dihderals
@@ -317,15 +254,16 @@ CASE_G_MULTIPLICITY = 0
 CASE_G_PHASE_SHIFT = 0
 
 # Subsets main dictionary for values with "_1" in the key
-caseGDictionary = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_1" in key}
-caseGKeys = list(caseGDictionary.keys())
+# Note: Case G doesn't take into account metal dihedrals which should be zero
+# Instead metal dihedrals will just be missing from LAMMPS files
+caseGDictionary = {key: value for key, value in possibleAtoms.items() if "_1" in key}
 
-for j in range(len(caseGDictionary)):
+for key, value in caseGDictionary.items():
 
     # Writes to files, calculate barrier energy and add key combo to list
-    file_type.write("@dihedral:" + caseGKeys[j].replace("*", "w") + "-wildcard" + "  @atom:* @atom:" + caseGKeys[j] + " @atom:*" + " @atom:*\n")
-    file_coeff.write("dihedral_coeff @dihedral:" + caseGKeys[j].replace("*", "w") + "-wildcard " + str(CASE_G_ENERGY) + " " + str(CASE_G_MULTIPLICITY) + " " + str(CASE_G_PHASE_SHIFT) + " 0.000\n")
-    typeNames.append(caseGKeys[j].replace("*", "w") + "-wildcard")
+    file_type.write("@dihedral:" + key.replace("*", "w") + "-wildcard" + "  @atom:* @atom:" + key + " @atom:*" + " @atom:*\n")
+    file_coeff.write("dihedral_coeff @dihedral:" + key.replace("*", "w") + "-wildcard " + str(CASE_G_ENERGY) + " " + str(CASE_G_MULTIPLICITY) + " " + str(CASE_G_PHASE_SHIFT) + " 0.000\n")
+    typeNames.append(key.replace("*", "w") + "-wildcard")
 
 # Case H - J,K = X_3 from column 16
 # Alternate form of Case A
@@ -334,21 +272,12 @@ CASE_H_MULTIPLICITY = 2
 CASE_H_PHASE_SHIFT = 90 * CASE_H_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_3" in the key if they are column16
-caseHDictionary = {key: possibleAtoms[key] for key in possibleAtoms.keys() for x3 in column16 if x3 in key}
-caseHKeys = list(caseHDictionary.keys())
+caseHDictionary = {key: value for key, value in possibleAtoms.items() for x3 in column16 if x3 in key}
 
-for j in range(len(caseHDictionary)):
-    for k in range(len(caseHDictionary)):
+for keyJ, valueJ in caseHDictionary.items():
+    for keyK, valueK in caseHDictionary.items():
 
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseHKeys[j] + "-" + caseHKeys[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseHKeys[j] + " @atom:" + caseHKeys[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_H_ENERGY / (caseHDictionary[caseHKeys[j]] * caseHDictionary[caseHKeys[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_H_MULTIPLICITY) + " " + str(CASE_H_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_H_ENERGY, CASE_H_MULTIPLICITY, CASE_H_PHASE_SHIFT, keyJ, keyK)
 
 # Case I - J = X_3 from column 16, K = X_2, X_R
 # Alternate form of Case B
@@ -358,8 +287,8 @@ CASE_I_PHASE_SHIFT = 180 * CASE_I_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_3" for column16, "_2" or "_R" in the key
 # C_R_b1 can't techically ever do this but has been left
-caseIDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() for x3 in column16 if x3 in key}
-caseIDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key or "_R" in key}
+caseIDictionaryJ = {key: value for key, value in possibleAtoms.items() for x3 in column16 if x3 in key}
+caseIDictionaryK = {key: value for key, value in possibleAtoms.items() if "_2" in key or "_R" in key}
 wildcardCases(["C_2", "C_2_b1", "C_2_b2"], "C_2*", caseIDictionaryK)
 wildcardCases(["C_R*", "C_R*_b1"], "C_R*", caseIDictionaryK)
 wildcardCases(["B_2_d1", "B_2_b1_d1", "B_2_b2_d1"], "B_2*_d1", caseIDictionaryK)
@@ -369,21 +298,10 @@ wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseIDictiona
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseIDictionaryK)
 wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseIDictionaryK)
 
-caseIKeysK = list(caseIDictionaryK.keys())
-caseIKeysJ = list(caseIDictionaryJ.keys())
+for keyJ, valueJ in caseIDictionaryJ.items():
+    for keyK, valueK in caseIDictionaryK.items():
 
-for j in range(len(caseIDictionaryJ)):
-    for k in range(len(caseIDictionaryK)):
-
-        # Create type name for dihedral, remove wildcard * if present
-        dihedralName = caseIKeysJ[j] + "-" + caseIKeysK[k]
-        dihedralName = dihedralName.replace("*", "w")
-
-        # Writes to files, calculate barrier energy and add key combo to list
-        file_type.write("@dihedral:" + dihedralName + "  @atom:* @atom:" + caseIKeysJ[j] + " @atom:" + caseIKeysK[k] + " @atom:*\n")
-        barrierEnergy = str(round(CASE_I_ENERGY / (caseIDictionaryJ[caseIKeysJ[j]] * caseIDictionaryK[caseIKeysK[k]]), 4))
-        file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_I_MULTIPLICITY) + " " + str(CASE_I_PHASE_SHIFT) + " 0.000\n")
-        typeNames.append(dihedralName)
+        writeOutput(CASE_I_ENERGY, CASE_I_MULTIPLICITY, CASE_I_PHASE_SHIFT, keyJ, keyK)
 
 # Case J - J= X_2, X_R, K = X_3, I != X_2, X_R e.g. propene
 # Alternate form of Case B - Last means it has greatest priority in moltemplate
@@ -391,7 +309,7 @@ CASE_J_ENERGY = 2.0/2
 CASE_J_MULTIPLICITY = 3
 CASE_J_PHASE_SHIFT = 180 * CASE_J_MULTIPLICITY + 180
 
-caseJDictionaryJ = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" in key or "_R" in key}
+caseJDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_2" in key or "_R" in key}
 wildcardCases(["C_2", "C_2_b1", "C_2_b2"], "C_2*", caseJDictionaryJ)
 wildcardCases(["C_R*", "C_R*_b1"], "C_R*", caseJDictionaryJ)
 wildcardCases(["B_2_d1", "B_2_b1_d1", "B_2_b2_d1"], "B_2*_d1", caseJDictionaryJ)
@@ -401,33 +319,20 @@ wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseJDictiona
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseJDictionaryJ)
 wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseJDictionaryJ)
 
-caseJDictionaryK = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_3" in key}
-caseJDictionaryI = {key: possibleAtoms[key] for key in possibleAtoms.keys() if "_2" not in key and "_R" not in key}
-caseJKeysK = list(caseJDictionaryK.keys())
-caseJKeysJ = list(caseJDictionaryJ.keys())
-caseJKeysI = list(caseJDictionaryI.keys())
+caseJDictionaryK = {key: value for key, value in possibleAtoms.items() if "_3" in key}
+caseJDictionaryI = {key: value for key, value in possibleAtoms.items() if "_2" not in key and "_R" not in key}
 
-for j in range(len(caseJDictionaryJ)):
-    for k in range(len(caseJDictionaryK)):
-        for i in range(len(caseJDictionaryI)):
+for keyJ, valueJ in caseJDictionaryJ.items():
+    for keyK, valueK in caseJDictionaryK.items():
+        for keyI, valueI in caseJDictionaryI.items():
 
-            # Create type name for dihedral, remove wildcard * if present
-            dihedralName = caseJKeysJ[j] + "-" + caseJKeysK[k] + "-" + caseJKeysI[i]
-            dihedralName = dihedralName.replace("*", "w")
-
-            # Writes to files, calculate barrier energy and add key combo to list
-            file_type.write("@dihedral:" + dihedralName + "  @atom:" + caseJKeysI[i] + " @atom:" + caseJKeysJ[j] + " @atom:" + caseJKeysK[k] + " @atom:*\n")
-            barrierEnergy = str(round(CASE_J_ENERGY / (caseJDictionaryJ[caseJKeysJ[j]] * caseJDictionaryK[caseJKeysK[k]]), 4))
-            file_coeff.write("dihedral_coeff @dihedral:" + dihedralName + " " + barrierEnergy + " " + str(CASE_J_MULTIPLICITY) + " " + str(CASE_J_PHASE_SHIFT) + " 0.000\n")
-            typeNames.append(dihedralName)
+            writeOutput(CASE_J_ENERGY, CASE_J_MULTIPLICITY, CASE_J_PHASE_SHIFT, keyI, keyJ, keyK)
 
 file_type.close()
 file_coeff.close()
 
 # Find repeated type names
-len(typeNames)
 repeatNames = set([x for x in typeNames if typeNames.count(x) > 1])
 # Raises error if names are repeated
 if len(repeatNames) != 0:
     raise Exception("Repeated type names exist in this file.")
-repeatNames
