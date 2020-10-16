@@ -1,3 +1,29 @@
+##############################################################################
+# Developed by: Matthew Bone
+# Last Updated: 08/10/2020
+# Updated by: Matthew Bone
+#
+# Contact Details:
+# Bristol Composites Institute (BCI)
+# Department of Aerospace Engineering - University of Bristol
+# Queen's Building - University Walk
+# Bristol, BS8 1TR
+# U.K.
+# Email - matthew.bone@bristol.ac.uk
+#
+# File Description:
+# This file converts .xyz files to moltemplate .lt files. It is used alongside
+# run_xyz_to_moltemplate.sh so arguments can be given. Generates 'molecule'.lt
+# and system.lt files. 'molecule'.lt is built to the LAMMPS 'full' unit style.
+#
+# Argument 1 is the directory which is automatically filled. Argument 2 is xyz
+# file name without extension e.g. 'methanol'. Argument 3 is cubic cell box size
+# in angstroms e.g. '20.0'. Argument 4 is forcefield name without file extension
+# e.g. 'dreiding'.
+#
+# This file requires the library xyzFunctions.py
+##############################################################################
+
 # Import packages
 import os
 import sys
