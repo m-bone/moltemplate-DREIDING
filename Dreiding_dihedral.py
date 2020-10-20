@@ -1,6 +1,6 @@
 ##############################################################################
 # Developed by: Matthew Bone
-# Last Updated: 01/10/2020
+# Last Updated: 20/10/2020
 # Updated by: Matthew Bone
 #
 # Contact Details:
@@ -32,7 +32,7 @@
 import os
 from Dreiding_label_dictionary import labelDict
 
-os.chdir("/home/matt/Documents/Dreiding_forcefield")
+os.chdir("/home/matt/Documents/XP_Project/Dreiding_forcefield")
 
 subDict = labelDict
 
@@ -47,15 +47,20 @@ def wildcardCases(list, replacement, dict):
         dict[replacement] = dict.pop(value)
 
 def writeOutput(ENERGY, MULTIPLICITY, PHASE_SHIFT, *args):
-    # Create type name for dihedral, remove wildcard * if present
-    dihedralName = '-'.join(args)
-    dihedralName = dihedralName.replace("*", "w")
-
     # Change string if case has 3 atoms
     if len(args) == 2:
         firstTerm = " @atom:*"
+
+        # Create type name for dihedral, remove wildcard * if present
+        dihedralName = '-'.join(args)
+        dihedralName = dihedralName.replace("*", "w")
     else:
         firstTerm = " @atom:" + args[2]
+
+        # Create type name for dihedral, remove wildcard * if present
+        atomLabels = [args[2], args[0], args[1]]
+        dihedralName = '-'.join(atomLabels)
+        dihedralName = dihedralName.replace("*", "w")
     # Writes to files, calculate barrier energy and add key combo to list
     file_type.write("@dihedral:" + dihedralName + firstTerm + " @atom:" + args[0] + " @atom:" + args[1] + " @atom:*\n")
     barrierEnergy = str(round(ENERGY / (valueJ * valueK), 4))
@@ -326,7 +331,7 @@ for keyJ, valueJ in caseJDictionaryJ.items():
     for keyK, valueK in caseJDictionaryK.items():
         for keyI, valueI in caseJDictionaryI.items():
 
-            writeOutput(CASE_J_ENERGY, CASE_J_MULTIPLICITY, CASE_J_PHASE_SHIFT, keyI, keyJ, keyK)
+            writeOutput(CASE_J_ENERGY, CASE_J_MULTIPLICITY, CASE_J_PHASE_SHIFT, keyJ, keyK, keyI)
 
 file_type.close()
 file_coeff.close()
