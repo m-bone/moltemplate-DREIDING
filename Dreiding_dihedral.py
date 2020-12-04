@@ -1,6 +1,6 @@
 ##############################################################################
 # Developed by: Matthew Bone
-# Last Updated: 20/10/2020
+# Last Updated: 04/12/2020
 # Updated by: Matthew Bone
 #
 # Contact Details:
@@ -75,7 +75,6 @@ wildcard(["H", "H_HB", "H_B"], "H*")
 wildcard(["C_3", "C_34", "C_33", "C_32", "C_31"], "C_3*")
 wildcard(["C_R", "C_R1", ], "C_R*")
 wildcard(["C_R_b1", "C_R1_b1"], "C_R*_b1")
-# wildcard(["C_2", "C_2_b1", "C_2_b2"], "C_2*")
 wildcard(["C_1", "C_1_b1"], "C_1*")
 
 # Nitrogen
@@ -94,7 +93,6 @@ wildcard(["N_1", "N_1_ha"], "N_1*")
 # Oxygen
 wildcard(["O_3", "O_3_ha", "O_3_hd"], "O_3*")
 wildcard(["O_R", "O_R_ha"], "O_R*")
-wildcard(["O_2", "O_2_ha"], "O_2*")
 wildcard(["O_2_b1", "O_2_b1_ha", "O_2_b1_hd"], "O_2_b1*")
 wildcard(["O_2_b2", "O_2_b2_ha"], "O_2_b2*")
 wildcard(["O_1", "O_1_ha"], "O_1*")
@@ -142,6 +140,8 @@ CASE_B_PHASE_SHIFT = 0 * CASE_B_MULTIPLICITY + 180
 
 # Subsets main dictionary for values with "_3", "_2" or "_R" in the key
 caseBDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_2" in key or "_R" in key}
+# These changes are allowed as Case B is suitably unique so as to not interfer
+# with other Cases
 wildcardCases(["C_2", "C_2_b1", "C_2_b2"], "C_2*", caseBDictionaryJ)
 wildcardCases(["C_R*", "C_R*_b1"], "C_R*", caseBDictionaryJ)
 wildcardCases(["B_2_d1", "B_2_b1_d1", "B_2_b2_d1"], "B_2*_d1", caseBDictionaryJ)
@@ -149,7 +149,7 @@ wildcardCases(["B_2_d2", "B_2_b1_d2", "B_2_b2_d2"], "B_2*_d2", caseBDictionaryJ)
 wildcardCases(["N_R_d2*", "N_R_b1_d2*"], "N_R*_d2*", caseBDictionaryJ)
 wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseBDictionaryJ)
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseBDictionaryJ)
-wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseBDictionaryJ)
+wildcardCases(["O_2", "O_2_ha", "O_2_b1*", "O_2_b2*"], "O_2*", caseBDictionaryJ)
 
 caseBDictionaryK = {key: value for key, value in possibleAtoms.items() if "_3" in key}
 
@@ -301,7 +301,7 @@ wildcardCases(["B_2_d2", "B_2_b1_d2", "B_2_b2_d2"], "B_2*_d2", caseIDictionaryK)
 wildcardCases(["N_R_d2*", "N_R_b1_d2*"], "N_R*_d2*", caseIDictionaryK)
 wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseIDictionaryK)
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseIDictionaryK)
-wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseIDictionaryK)
+wildcardCases(["O_2", "O_2_ha", "O_2_b1*", "O_2_b2*"], "O_2*", caseIDictionaryK)
 
 for keyJ, valueJ in caseIDictionaryJ.items():
     for keyK, valueK in caseIDictionaryK.items():
@@ -322,7 +322,7 @@ wildcardCases(["B_2_d2", "B_2_b1_d2", "B_2_b2_d2"], "B_2*_d2", caseJDictionaryJ)
 wildcardCases(["N_R_d2*", "N_R_b1_d2*"], "N_R*_d2*", caseJDictionaryJ)
 wildcardCases(["N_2_d1*", "N_2_b1_d1*", "N_2_b2_d1*"], "N_2*_d1*", caseJDictionaryJ)
 wildcardCases(["N_2_d2*", "N_2_b1_d2*", "N_2_b2_d2*"], "N_2*_d2*", caseJDictionaryJ)
-wildcardCases(["O_2*", "O_2_b1*", "O_2_b2*"], "O_2*", caseJDictionaryJ)
+wildcardCases(["O_2", "O_2_ha", "O_2_b1*", "O_2_b2*"], "O_2*", caseJDictionaryJ)
 
 caseJDictionaryK = {key: value for key, value in possibleAtoms.items() if "_3" in key}
 caseJDictionaryI = {key: value for key, value in possibleAtoms.items() if "_2" not in key and "_R" not in key}
