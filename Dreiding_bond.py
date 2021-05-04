@@ -28,14 +28,19 @@ import pandas as pd
 import numpy as np
 from Dreiding_label_dictionary import labelDict
 
-os.chdir("/home/matt/Documents/Dreiding_forcefield")
+os.chdir("/home/matt/Documents/XP_Project/Dreiding_forcefield")
 
 subDict = labelDict
 
 # Replace many labels with a single wildcard label
 # Wildcard function drops values and replaces them with replacement
 def wildcard(list, replacement):
+    replacement = '*' + replacement
     for value in list:
+        # Add wildcards to the front, rather than changing the inputs
+        value = '*' + value
+
+        # Replace key with new value
         subDict[replacement] = subDict.pop(value)
 
 # Remove duplicate labels that don't effect bonding
@@ -87,7 +92,7 @@ keys = list(subDict.keys())
 atomClasses = {key: subDict[key][1] for key in subDict.keys()}
 
 # Empty dataframe with rows and columns labelled as keys
-R0 = pd.DataFrame([], index = [keys], columns = [keys])
+R0 = pd.DataFrame([], index = keys, columns = keys)
 
 
 # R0 calculation from DREIDING

@@ -39,11 +39,21 @@ subDict = labelDict
 # Replace many labels with a single wildcard label
 # Wildcard function drops values and replaces them with replacement
 def wildcard(list, replacement):
+    replacement = '*' + replacement
     for value in list:
+        # Add wildcards to the front, rather than changing the inputs
+        value = '*' + value
+
+        # Replace key with new value
         subDict[replacement] = subDict.pop(value)
 
 def wildcardCases(list, replacement, dict):
+    replacement = '*' + replacement
     for value in list:
+        # Add wildcards to the front, rather than changing the inputs
+        value = '*' + value
+
+        # Replace key with new value
         dict[replacement] = dict.pop(value)
 
 def writeOutput(ENERGY, MULTIPLICITY, PHASE_SHIFT, *args):
@@ -105,7 +115,7 @@ wildcard(["F", "F_hd", "F_ha"], "F*")
 possibleAtoms = {key: value[3] for key, value in subDict.items()}
 
 # List of X_3 in column 16 as treated differently (oxygen, sulphur, etc.)
-column16 = ["O_3*", "S_3", "Se_3", "Te_3"]
+column16 = ["*O_3*", "*S_3", "*Se_3", "*Te_3"]
 
 # Repeated type names list: No type names should appear twice with this methodology
 typeNames = []
@@ -128,7 +138,7 @@ for keyJ, valueJ in caseADictionary.items():
     for keyK, valueK in caseADictionary.items():
 
         # Due to Case H priority - skips column16-column16 bonding pairs
-        if keyJ[0:4] in column16 and keyK[0:4] in column16:
+        if keyJ[0:5] in column16 and keyK[0:5] in column16:
             continue
 
         writeOutput(CASE_A_ENERGY, CASE_A_MULTIPLICITY, CASE_A_PHASE_SHIFT, keyJ, keyK)
@@ -210,7 +220,7 @@ CASE_E_PHASE_SHIFT = 180 * CASE_E_MULTIPLICITY + 180
 # This third handles b1-b1 bond pairs, apart from R-b1-R-b1 which is Case F
 caseEDictionaryJ = {key: value for key, value in possibleAtoms.items() if "_R_b1" in key or "_R*_b1" in key or "_2_b1" in key}
 caseEDictionaryK = {key: value for key, value in caseEDictionaryJ.items() if "_R_b1" not in key}
-caseEDictionaryK.pop("C_R*_b1")
+caseEDictionaryK.pop("*C_R*_b1")
 
 for keyJ, valueJ in caseEDictionaryJ.items():
     for keyK, valueK in caseEDictionaryK.items():

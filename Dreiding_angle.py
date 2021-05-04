@@ -24,37 +24,37 @@
 # Import packages
 import os
 
-os.chdir("/home/matt/Documents/Dreiding_forcefield")
+os.chdir("/home/matt/Documents/XP_Project/Dreiding_forcefield")
 
 # Dictionary of bond angles (in deg) according to DREIDING
 atomDictionary = {
-    "H": 180.0,
-    "H_HB": 180.0,
-    "H_B": 90.0,
-    "B_3": 109.471,
-    "C_3": 109.471,
-    "N_3": 106.7,
-    "O_3": 104.51,
-    "F": 180.0,
-    "Al_3": 109.471,
-    "Si_3": 109.471,
-    "P_3": 93.3,
-    "S_3": 92.1,
-    "Cl": 180.0,
-    "Ga_3": 109.471,
-    "Ge_3": 109.471,
-    "As_3": 92.1,
-    "Se_3": 90.6,
-    "Br": 180.0,
-    "In_3": 109.471,
-    "Sn_3": 109.471,
-    "Sb_3": 91.6,
-    "Te_3": 90.3,
-    "I": 180.0,
-    "Na": 90.0,
-    "Ca": 90.0,
-    "Fe": 90.0,
-    "Zn": 109.471
+    "*H": 180.0,
+    "*H_HB": 180.0,
+    "*H_B": 90.0,
+    "*B_3": 109.471,
+    "*C_3": 109.471,
+    "*N_3": 106.7,
+    "*O_3": 104.51,
+    "*F": 180.0,
+    "*Al_3": 109.471,
+    "*Si_3": 109.471,
+    "*P_3": 93.3,
+    "*S_3": 92.1,
+    "*Cl": 180.0,
+    "*Ga_3": 109.471,
+    "*Ge_3": 109.471,
+    "*As_3": 92.1,
+    "*Se_3": 90.6,
+    "*Br": 180.0,
+    "*In_3": 109.471,
+    "*Sn_3": 109.471,
+    "*Sb_3": 91.6,
+    "*Te_3": 90.3,
+    "*I": 180.0,
+    "*Na": 90.0,
+    "*Ca": 90.0,
+    "*Fe": 90.0,
+    "*Zn": 109.471
 }
 
 #List of keys from dictionary
@@ -65,7 +65,7 @@ file = open("angle.txt", "w")
 
 # Angles by type
 for x in range(len(atomDictionary)):
-    file.write("@angle:" + keys[x] + "  @atom:* @atom:" + keys[x] + "* @atom:*\n")
+    file.write("@angle:" + keys[x][1:] + "  @atom:* @atom:" + keys[x] + "* @atom:*\n")
 
 # Write specific X_2, X_1 and X_R types as they all have the same angles
 file.write("@angle:_2  @atom:* @atom:*_2* @atom:*\n")
@@ -75,7 +75,7 @@ file.write("@angle:_R  @atom:* @atom:*_R* @atom:*\n")
 
 # Angle coeffs
 for y in range(len(atomDictionary)):
-    file.write("angle_coeff @angle:" + keys[y] + " 50.0 " + str(atomDictionary[keys[y]]) + "\n")
+    file.write("angle_coeff @angle:" + keys[y][1:] + " 50.0 " + str(atomDictionary[keys[y]]) + "\n")
 
 # Write specific X_2, X_1 and X_R types as they all have the same angles
 file.write("angle_coeff @angle:_2 50.0 120.0 \n")
