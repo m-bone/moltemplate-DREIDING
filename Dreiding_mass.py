@@ -1,6 +1,6 @@
 ##############################################################################
 # Developed by: Matthew Bone
-# Last Updated: 01/10/2020
+# Last Updated: 04/05/2021
 # Updated by: Matthew Bone
 #
 # Contact Details:
@@ -21,7 +21,7 @@
 import os
 from Dreiding_label_dictionary import labelDict
 
-os.chdir("/home/matt/Documents/Dreiding_forcefield")
+os.chdir("/home/matt/Documents/XP_Project/Dreiding_forcefield")
 
 #List of keys from dictionary
 keys = list(labelDict.keys())
@@ -33,8 +33,7 @@ file = open("masses.txt", "w")
 #   file.write("\item " + keys[k].replace("_", "\_") + "\n")
 
 # Loop through all dictionary values and the number of repeats specified
-for h in range(len(labelDict)):
-    for i in range(repeats):
-        file.write("@atom:" + keys[h] + "\t" + str(labelDict[keys[h]][0]) + "\n")
+for key, value in labelDict.items():
+    file.write("@atom:" + key + "\t" + str(value[0]) + "\n")
 
 file.close()
