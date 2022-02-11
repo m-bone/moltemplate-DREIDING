@@ -45,21 +45,21 @@ wildcard(["C_R", "C_R1", ], "C_R*")
 wildcard(["C_R_b1", "C_R1_b1"], "C_R*_b1")
 
 # Nitrogen
-wildcard(["N_3", "N_3_ha", "N_3_hd"], "N_3*")
-wildcard(["N_R_d1", "N_R_d1_ha", "N_R_d2", "N_R_d2_ha", "N_R_d2_hd"], "N_R*")
-wildcard(["N_R_b1_d2", "N_R_b1_d2_ha", "N_R_b1_d2_hd"], "N_R_b1*")
-wildcard(["N_2_d1", "N_2_d1_ha", "N_2_d1_hd", "N_2_d2", "N_2_d2_ha", "N_2_d2_hd"], "N_2*")
-wildcard(["N_2_b1_d1", "N_2_b1_d1_ha","N_2_b1_d2", "N_2_b1_d2_ha", "N_2_b1_d2_hd"], "N_2_b1*")
-wildcard(["N_2_b2_d1", "N_2_b2_d1_ha", "N_2_b2_d2", "N_2_b2_d2_ha", "N_2_b2_d2_hd"], "N_2_b2*")
-wildcard(["N_1", "N_1_ha"], "N_1*")
+wildcard(["N_3", "N_3_hb"], "N_3*")
+wildcard(["N_R_d1", "N_R_d1_hb", "N_R_d2", "N_R_d2_hb"], "N_R*")
+wildcard(["N_R_b1_d2", "N_R_b1_d2_hb"], "N_R_b1*")
+wildcard(["N_2_d1", "N_2_d1_hb", "N_2_d2", "N_2_d2_hb"], "N_2*")
+wildcard(["N_2_b1_d1", "N_2_b1_d1_hb","N_2_b1_d2", "N_2_b1_d2_hb"], "N_2_b1*")
+wildcard(["N_2_b2_d1", "N_2_b2_d1_hb", "N_2_b2_d2", "N_2_b2_d2_hb"], "N_2_b2*")
+wildcard(["N_1", "N_1_hb"], "N_1*")
 
 # Oxygen
-wildcard(["O_3", "O_3_ha", "O_3_hd"], "O_3*")
-wildcard(["O_R", "O_R_ha"], "O_R*")
-wildcard(["O_2", "O_2_ha"], "O_2*")
-wildcard(["O_2_b1", "O_2_b1_ha", "O_2_b1_hd"], "O_2_b1*")
-wildcard(["O_2_b2", "O_2_b2_ha"], "O_2_b2*")
-wildcard(["O_1", "O_1_ha"], "O_1*")
+wildcard(["O_3", "O_3_hb"], "O_3*")
+wildcard(["O_R", "O_R_hb"], "O_R*")
+wildcard(["O_2", "O_2_hb"], "O_2*")
+wildcard(["O_2_b1", "O_2_b1_hb"], "O_2_b1*")
+wildcard(["O_2_b2", "O_2_b2_hb"], "O_2_b2*")
+wildcard(["O_1", "O_1_hb"], "O_1*")
 
 # Boron
 wildcard(["B_2_d1", "B_2_d2", ], "B_2*")
@@ -67,7 +67,7 @@ wildcard(["B_2_b1_d1", "B_2_b1_d2", ], "B_2_b1*")
 wildcard(["B_2_b2_d1", "B_2_b2_d2", ], "B_2_b2*")
 
 # Fluorine
-wildcard(["F", "F_ha", "F_hd"], "F*")
+wildcard(["F", "F_hb"], "F*")
 
 # Other elements
 wildcard(["Al_3_d1", "Al_3_d2"], "Al_3*")
