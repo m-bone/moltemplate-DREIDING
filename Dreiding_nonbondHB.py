@@ -28,7 +28,7 @@ D = "4.0" # kcal/mol
 
 file = open("hb_nonbond.txt", "w")
 
-file.write("pair_coeff  @atom:*_hd  @atom:*_hd hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
-file.write("pair_coeff  @atom:*_hd  @atom:*_ha hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
+file.write("pair_coeff  @atom:*_hb  @atom:*_hb hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
+file.write("pair_coeff  @atom:*_hb  @atom:*_hb hbond/dreiding/lj @atom:H_HB j " + D + " " + R + " 4" "\n")
 
 file.close()
