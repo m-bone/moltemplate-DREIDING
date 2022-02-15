@@ -21,7 +21,7 @@
 # Import packages
 import os
 
-os.chdir("/home/matt/Documents/Dreiding_forcefield")
+os.chdir("/home/matt/Documents/UsefulStore/XP_Project/Dreiding_forcefield/")
 
 R = "2.75" # Angstroms
 D = "4.0" # kcal/mol
@@ -29,6 +29,7 @@ D = "4.0" # kcal/mol
 file = open("hb_nonbond.txt", "w")
 
 file.write("pair_coeff  @atom:*_hd  @atom:*_hd hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
+file.write("pair_coeff  @atom:*_hd  @atom:*_hd hbond/dreiding/lj @atom:H_HB j " + D + " " + R + " 4" "\n")
 file.write("pair_coeff  @atom:*_hd  @atom:*_ha hbond/dreiding/lj @atom:H_HB i " + D + " " + R + " 4" "\n")
 
 file.close()
